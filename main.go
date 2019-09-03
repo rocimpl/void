@@ -1,4 +1,4 @@
-package main
+package void
 
 func main() {
 
