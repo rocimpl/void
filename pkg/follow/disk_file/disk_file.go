@@ -1,6 +1,7 @@
 package disk_file_follow
 
 import (
+    "bufio"
     "errors"
     "github.com/rocimpl/void/pkg/parser"
 )
@@ -10,8 +11,9 @@ var (
 )
 
 type DiskFileFollow struct {
-    file   string
-    parser parser.Parser
+    file      string
+    belt      parser.Parser
+    sequencer bufio.Scanner
 }
 
 func NewDiskFileFollow(params map[string]string, parser parser.Parser) (*DiskFileFollow, error) {
@@ -21,13 +23,15 @@ func NewDiskFileFollow(params map[string]string, parser parser.Parser) (*DiskFil
     }
 
     return &DiskFileFollow{
-        file:   file,
-        parser: parser,
+        file: file,
+        belt: parser,
     }, nil
 }
 
-func (f *DiskFileFollow) Process() error {
-    panic("implement me")
+func (f *DiskFileFollow) Process(seek int64) (read []byte, err error) {
+    f.sequencer.Scan()
+
+    f.belt.Parse(f.sequencer.Bytes())
 }
 
 func (f *DiskFileFollow) Stop() {

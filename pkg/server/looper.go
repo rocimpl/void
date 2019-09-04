@@ -1,11 +1,13 @@
 package server
 
 import (
+    util "github.com/rocimpl/void/pkg"
     "github.com/rocimpl/void/pkg/config"
     "github.com/rocimpl/void/pkg/follow"
     "github.com/rocimpl/void/pkg/follow/disk_file"
     "github.com/rocimpl/void/pkg/parser"
     "github.com/rocimpl/void/pkg/parser/zap"
+    "github.com/rocimpl/void/pkg/pusher"
     "os"
     "os/signal"
     "syscall"
@@ -13,8 +15,9 @@ import (
 )
 
 type Looper struct {
-    config  config.Config
     targets []follow.Follow
+    pusher  *pusher.Pusher
+    runner  *time.Ticker
 }
 
 func newFollow(target config.Target) (follow.Follow, error) {
@@ -40,34 +43,38 @@ func newParser(target config.Target) (parser.Parser, error) {
     }
 }
 
-func New(cfg config.Config) (lp *Looper, err error) {
-    lp = &Looper{
-        config: cfg,
+func New(cfg config.Config) (looper *Looper, err error) {
+    looper = new(Looper)
+
+    looper.pusher, err = pusher.InitPusher(cfg.Push)
+    if err != nil {
+        return nil, err
     }
 
-    lp.targets = make([]follow.Follow, len(lp.config.Targets))
-    for i, target := range lp.config.Targets {
-        lp.targets[i], err = newFollow(target)
+    looper.targets = make([]follow.Follow, len(cfg.Targets))
+    for i, target := range cfg.Targets {
+        looper.targets[i], err = newFollow(target)
         if err != nil {
             return nil, err
         }
     }
 
-    return lp, nil
+    looper.runner = time.NewTicker(cfg.Period.Duration)
+
+    return looper, nil
 }
 
-func (lp *Looper) Run() (err error) {
+func (looper *Looper) Run() (err error) {
     quit := make(chan os.Signal)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-    runner := time.NewTicker(lp.config.Period.Duration)
 
     for {
         select {
-        case <-runner.C:
-            for _, target := range lp.targets {
+        case <-looper.runner.C:
+            for _, target := range looper.targets {
                 read, err := target.Process(0)
                 if err != nil {
-                    // Log error
+                    util.Errof("Fail process", err)
                     continue
                 }
 
@@ -83,6 +90,6 @@ func (lp *Looper) Run() (err error) {
     }
 }
 
-func (lp *Looper) Shutdown() {
+func (looper *Looper) Shutdown() {
 
 }

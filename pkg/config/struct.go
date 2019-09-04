@@ -17,9 +17,13 @@ type Target struct {
 }
 
 type PushConfig struct {
-    Addr     string
-    Port     int
-    Username string
-    Password string
-    Debug    bool
+    Host         string
+    TableName    string
+    Port         int
+    ReadTimeout  int
+    WriteTimeout int
+    Username     string
+    Password     string
+    Database     string
+    Debug        bool
 }

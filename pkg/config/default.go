@@ -2,7 +2,13 @@ package config
 
 var DefaultConfig = Config{
     Push:     PushConfig{
-        Port:     9000,
-        Username: "default",
+        Host:         "",
+        Port:         9000,
+        ReadTimeout:  30,
+        WriteTimeout: 60,
+        Username:     "default",
+        Password:     "",
+        Database:     "default",
+        Debug:        false,
     },
 }

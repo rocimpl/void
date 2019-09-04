@@ -1,9 +1,9 @@
 # COOKBOOK
 
-## Database concent
+## Database concept
 
 ```
-CREATE TABLE logs
+CREATE TABLE logs_concept_1
 (
     timestamp   DateTime,
     nanoseconds Int16,
