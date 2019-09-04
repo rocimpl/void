@@ -1,8 +1,14 @@
 package parser
 
-import "github.com/rocimpl/void/pkg/types"
+import (
+    "errors"
+    "github.com/rocimpl/void/pkg/types"
+)
+
+var (
+    ErrUnknownParser = errors.New("void: Unknown parser type")
+)
 
 type Parser interface {
-    Parse(sequence []byte) error
-    Snapshot() []types.LogFormat
+    Parse(sequence []byte) (types.LogFormat, error)
 }

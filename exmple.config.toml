@@ -1,0 +1,17 @@
+LockFile = "/tmp/void.lock"
+
+[Push]
+    Addr = "clickhouse:9000"
+
+[[Targets]]
+    Type = "disk_file"
+    File = "/var/log/httpd/access_log"
+    Source = "nginx"
+    Label = ["prodaction", "web"]
+
+
+[[Targets]]
+    Type = "disk_file"
+    File = "/var/log/httpd/error_log"
+    Source = "nginx"
+    Label = ["prodaction", "web"]

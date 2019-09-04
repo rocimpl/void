@@ -1,5 +1,2 @@
 package server
 
-func New() {
-
-}

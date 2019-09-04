@@ -1,8 +1,12 @@
 package follow
 
-import "github.com/rocimpl/void/pkg/parser"
+import "errors"
+
+var (
+    ErrUnknownFollow = errors.New("void: Unknown follow type")
+)
 
 type Follow interface {
-    Start(parser parser.Parser) error
+    Process(seek int64) (read []byte, err error)
     Stop()
 }
